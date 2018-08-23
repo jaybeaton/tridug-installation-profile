@@ -1,0 +1,32 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.featured
+    - field.field.node.pet.body
+    - field.field.node.pet.field_image
+    - field.field.node.pet.field_pet_type
+    - node.type.pet
+    - responsive_image.styles.medium
+  module:
+    - responsive_image
+    - user
+id: node.pet.featured
+targetEntityType: node
+bundle: pet
+mode: featured
+content:
+  field_image:
+    weight: 0
+    label: hidden
+    settings:
+      responsive_image_style: medium
+      image_link: content
+    third_party_settings: {  }
+    type: responsive_image
+    region: content
+hidden:
+  body: true
+  content_moderation_control: true
+  field_pet_type: true
+  links: true

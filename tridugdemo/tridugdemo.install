@@ -1,0 +1,182 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the TriDUG Demo installation profile.
+ */
+
+use Drupal\user\Entity\User;
+use Drupal\shortcut\Entity\Shortcut;
+use Drupal\Component\Serialization\Yaml;
+use Drupal\node\Entity\Node;
+use Drupal\taxonomy\Entity\Term;
+use Drupal\menu_link_content\Entity\MenuLinkContent;
+
+/**
+ * Implements hook_install().
+ *
+ * Perform actions to set up the site for this profile.
+ *
+ * @see system_install()
+ */
+function tridugdemo_install() {
+
+  // Assign user 1 the "administrator" role.
+  $user = User::load(1);
+  $user->roles[] = 'administrator';
+  $user->save();
+
+  // We install some menu links, so we have to rebuild the router, to ensure the
+  // menu links are valid.
+  \Drupal::service('router.builder')->rebuildIfNeeded();
+
+  // Populate the default shortcut set.
+  $shortcut = Shortcut::create([
+    'shortcut_set' => 'default',
+    'title' => t('Add content'),
+    'weight' => -20,
+    'link' => ['uri' => 'internal:/node/add'],
+  ]);
+  $shortcut->save();
+
+  $shortcut = Shortcut::create([
+    'shortcut_set' => 'default',
+    'title' => t('All content'),
+    'weight' => -19,
+    'link' => ['uri' => 'internal:/admin/content'],
+  ]);
+  $shortcut->save();
+
+  // Create basic content blocks.
+  tridugdemo_create_blocks();
+
+  // Create required pages, pet types.
+  tridugdemo_create_pages();
+  tridugdemo_create_pet_types();
+
+  // Create menu items.
+  tridugdemo_create_menu_items();
+
+}
+
+/**
+ * Create basic content blocks.
+ */
+function tridugdemo_create_blocks() {
+
+  $path = drupal_get_path('profile', 'tridugdemo') . '/defaults';
+  $html_path = $path . '/blocks';
+  $config_path = drupal_get_path('profile', 'tridugdemo') . '/config';
+
+  $blocks = json_decode(file_get_contents($path . '/blocks.yml'));
+
+  foreach ($blocks as $info) {
+
+    // Read the YAML config file for the block placement.
+    $yml_path = $config_path . '/' . $info->yml;
+    $yml_contents = file_get_contents($yml_path);
+    $yml_data = Yaml::decode($yml_contents);
+
+    $block_entity_manager = \Drupal::service('entity.manager')
+      ->getStorage('block_content');
+
+    $block = $block_entity_manager->create(['type' => 'basic']);
+
+    $block->info = $info->info;
+
+    // Get the id from the YAML file.
+    $id = $yml_data['settings']['id'];
+    $block->uuid = preg_replace('/^block_content:/', '', $id);
+
+    // Get the markup from the file.
+    $block->body->value = file_get_contents($html_path . '/' . $info->html);
+    $block->body->format = $info->format;
+
+    $block->save();
+
+  } // Loop thru blocks to create.
+
+}
+
+/**
+ * Create required pages.
+ *
+ * @throws \Drupal\Core\Entity\EntityStorageException
+ */
+function tridugdemo_create_pages() {
+
+  $path = drupal_get_path('profile', 'tridugdemo') . '/defaults';
+  $pages = json_decode(file_get_contents($path . '/pages.yml'));
+
+  $config = \Drupal::configFactory()->getEditable('system.site');
+
+  foreach ($pages as $page) {
+    // Create placeholders for pages.
+    $node = Node::create([
+      'type' => 'page',
+      'langcode' => 'en',
+      'created' => \Drupal::time()->getRequestTime(),
+      'changed' => \Drupal::time()->getRequestTime(),
+      'uid' => 1,
+      'title' => $page->title,
+      'body' => ['format' => 'basic_html', 'value' => $page->text],
+    ]);
+    $node->save();
+    if (!empty($page->config)) {
+      $config->set($page->config, '/node/' . $node->id());
+    }
+  } // Loop thru pages to create.
+
+  $config->save(TRUE);
+
+}
+
+/**
+ * Create required types.
+ *
+ * @throws \Drupal\Core\Entity\EntityStorageException
+ */
+function tridugdemo_create_pet_types() {
+
+  $path = drupal_get_path('profile', 'tridugdemo') . '/defaults';
+  $types = json_decode(file_get_contents($path . '/pet_types.yml'));
+
+  foreach ($types as $type) {
+    // Create types.
+    $node = Term::create([
+      'vid' => 'pet_type',
+      'uid' => 1,
+      'name' => $type->name,
+    ]);
+    $node->save();
+  } // Loop thru types to create.
+
+}
+
+/**
+ * Create required menu items.
+ *
+ * @throws \Drupal\Core\Entity\EntityStorageException
+ */
+function tridugdemo_create_menu_items() {
+  $path = drupal_get_path('profile', 'tridugdemo') . '/defaults';
+  $items = json_decode(file_get_contents($path . '/menu-items.yml'));
+  foreach($items as $item) {
+    $menu_link = MenuLinkContent::create([
+      'menu_name' => $item->menu,
+      'title' => $item->title,
+      'description' => $item->title,
+      'link' => [
+        'uri' => $item->link,
+        'options' => [
+          'attributes' => [
+            'class' => $item->class ?? NULL,
+          ]
+        ],
+      ],
+      'weight' => $item->weight,
+      'expanded' => FALSE,
+    ]);
+    $menu_link->save();
+  }
+}

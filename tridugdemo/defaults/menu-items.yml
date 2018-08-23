@@ -1,0 +1,26 @@
+[
+    {
+        "menu": "main",
+        "title": "Directions",
+        "link": "internal:#directions",
+        "weight": -50
+    },
+    {
+        "menu": "main",
+        "title": "Contact",
+        "link": "internal:#contact",
+        "weight": -49
+    },
+    {
+        "menu": "footer",
+        "title": "Home",
+        "link": "internal:/",
+        "weight": -50
+    },
+    {
+        "menu": "footer",
+        "title": "Privacy Policy",
+        "link": "internal:#privacy",
+        "weight": -49
+    }
+]

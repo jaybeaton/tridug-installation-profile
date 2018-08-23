@@ -1,0 +1,8 @@
+[
+    {
+        "info": "Home page header block",
+        "yml": "optional/block.block.homepageheaderblock.yml",
+        "html": "home-page-header.html",
+        "format": "basic_html"
+    }
+]

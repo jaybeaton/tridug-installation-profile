@@ -1,0 +1,30 @@
+langcode: en
+status: true
+dependencies:
+  content:
+    - 'block_content:basic:c5580d86-012e-4f39-bf59-1ac1eeaa8452'
+  module:
+    - block_content
+    - system
+  theme:
+    - bartik
+id: homepageheaderblock
+theme: bartik
+region: featured_top
+weight: 0
+provider: null
+plugin: 'block_content:c5580d86-012e-4f39-bf59-1ac1eeaa8452'
+settings:
+  id: 'block_content:c5580d86-012e-4f39-bf59-1ac1eeaa8452'
+  label: 'Header block'
+  provider: block_content
+  label_display: visible
+  status: true
+  info: ''
+  view_mode: full
+visibility:
+  request_path:
+    id: request_path
+    pages: '<front>'
+    negate: false
+    context_mapping: {  }

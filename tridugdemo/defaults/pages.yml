@@ -1,0 +1,17 @@
+[
+    {
+        "title": "Home",
+        "text": "<p>This is the Home page placeholder.<\/p>",
+        "config": "page.front"
+    },
+    {
+        "title": "Page not Found",
+        "text": "<p>That page does not exist.<\/p>",
+        "config": "page.404"
+    },
+    {
+        "title": "Access Denied",
+        "text": "<p>You cannot access this page right now.<\/p>",
+        "config": "page.403"
+    }
+]

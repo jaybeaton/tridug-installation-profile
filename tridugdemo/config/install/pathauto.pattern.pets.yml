@@ -1,0 +1,21 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: pets
+label: Pets
+type: 'canonical_entities:node'
+pattern: '/pets/[node:title]'
+selection_criteria:
+  af049d8c-4aa2-4b96-8b07-8cd88a20d714:
+    id: node_type
+    bundles:
+      pet: pet
+    negate: false
+    context_mapping:
+      node: node
+    uuid: af049d8c-4aa2-4b96-8b07-8cd88a20d714
+selection_logic: and
+weight: -5
+relationships: {  }
