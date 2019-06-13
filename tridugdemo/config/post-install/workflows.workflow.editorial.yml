@@ -63,3 +63,4 @@ type_settings:
     node:
       - page
       - pet
+  default_moderation_state: draft

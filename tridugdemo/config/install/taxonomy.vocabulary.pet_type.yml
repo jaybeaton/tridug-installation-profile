@@ -4,5 +4,4 @@ dependencies: {  }
 name: 'Pet type'
 vid: pet_type
 description: 'A type of pet.'
-hierarchy: 0
 weight: 0
