@@ -24,7 +24,7 @@ core: 8.x
 
 # Required modules.
 # Note that any dependencies of the modules listed here will be installed automatically.
-dependencies:
+install:
   # Core
   - automated_cron
   - block
